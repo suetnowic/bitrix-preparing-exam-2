@@ -19,6 +19,7 @@ if($this->StartResultCache()) {
 		$arNews = [];
 		$arSections = [];
 		$productQty = 0;
+		$productPrice = [];
 
 		$rsElements = CIBlockElement::GetList(
 			[],
@@ -46,6 +47,7 @@ if($this->StartResultCache()) {
 				"MATERIAL" => $element["PROPERTY_MATERIAL_VALUE"],
 				"PRICE" => $element["PROPERTY_PRICE_VALUE"],
 			];
+			$productPrice[] = $element["PROPERTY_PRICE_VALUE"];
 		}
 
 		$rsElements = CIBlockElement::GetList(
@@ -102,10 +104,15 @@ if($this->StartResultCache()) {
 			$result[] = $item;
 			
 		}
+		sort(array: $productPrice);
 		$arResult['ITEMS'] = $result;
 		$arResult['COUNT'] = $productQty;
+		$arResult['MIN_MAX_COST'] = [
+			"MIN" => $productPrice[0],
+			"MAX" => $productPrice[count($productPrice) - 1]
+		];
 		
-		$this->SetResultCacheKeys(['COUNT']);
+		$this->SetResultCacheKeys(['COUNT', 'MIN_MAX_COST']);
 	}
 } else {
 	$this->AbortResultCache();
