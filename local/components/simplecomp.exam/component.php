@@ -96,7 +96,7 @@ if($this->StartResultCache()) {
 			$item = $news;
 			$item['PRODUCTS'] = [];
 			foreach($arSections as $section) {
-				if(in_array($news['ID'], $section[$arParams['USER_FIELD']])) {
+				if(in_array($news['ID'], is_array($section[$arParams['USER_FIELD']]) ? $section[$arParams['USER_FIELD']] : [])) {
 					$item['SECTIONS'][$section['ID']] = $section['NAME'];
 					$item['PRODUCTS'] = array_merge($item['PRODUCTS'], $arProducts[$section['ID']]);
 				}
