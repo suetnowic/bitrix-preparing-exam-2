@@ -114,8 +114,6 @@ if($this->StartResultCache()) {
 		
 		$this->SetResultCacheKeys(['COUNT', 'MIN_MAX_COST']);
 	}
-} else {
-	$this->AbortResultCache();
 }
 $this->includeComponentTemplate();
 
