@@ -4,7 +4,7 @@ if(!empty($arParams["CANONICAL"])) {
     $dbRes = CIBlockElement::GetList(
         [],
         [
-            "ICBLOCK_ID" => $arParams["CANONICAL"],
+            "IBLOCK_ID" => $arParams["CANONICAL"],
             "PROPERTY_NEWS_ID" => $arResult["ID"],
         ],
         false,
