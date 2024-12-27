@@ -65,7 +65,8 @@ if ($USER->IsAuthorized() && $this->startResultCache(false, $USER->GetID())) {
 				"ID",
 				"IBLOCK_ID",
 				"NAME",
-				$arParams['PROPERTY_AUTHOR']
+				$arParams['PROPERTY_AUTHOR'],
+				"ACTIVE_FROM"
 			]
 		);
 		while ($arElement = $rsElements->GetNextElement()) {
@@ -78,7 +79,7 @@ if ($USER->IsAuthorized() && $this->startResultCache(false, $USER->GetID())) {
 		$arResult['ELEMENTS'] = [];
 		foreach($arNews as $news) {
 			$arResult['ELEMENTS'][$news['PROPERTY_AUTHOR_VALUE']]['LOGIN'] = $arUsers[$news['PROPERTY_AUTHOR_VALUE']];
-			$arResult['ELEMENTS'][$news['PROPERTY_AUTHOR_VALUE']]['NEWS'][] = $news['NAME'];
+			$arResult['ELEMENTS'][$news['PROPERTY_AUTHOR_VALUE']]['NEWS'][] = $news;
 			$arNewsName[] = $news['ID'];
 		}
 		$arResult['ELEMENTS_COUNT'] = count(array_unique($arNewsName));
