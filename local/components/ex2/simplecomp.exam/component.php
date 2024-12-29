@@ -14,7 +14,8 @@ if (!Loader::includeModule("iblock")) {
 // Неавторизованному пользователю данные не выводятся
 // Текущий пользователь и его новости – не выводятся
 global $USER;
-if ($USER->IsAuthorized() && $this->startResultCache(false, $USER->GetID())) {
+$currentUserId = $USER->GetID();
+if ($USER->IsAuthorized() && $this->StartResultCache(false, $currentUserId)) {
 	if (
 		intval($arParams["NEWS_IBLOCK_ID"]) > 0 &&
 		!empty($arParams['USER_UF_CODE']) &&
@@ -40,7 +41,7 @@ if ($USER->IsAuthorized() && $this->startResultCache(false, $USER->GetID())) {
 		$arUsersType = [];
 		$arUsers = [];
 		while ($arUser = $rsUser->GetNext()) {
-			if ((int)$USER->GetID() === (int)$arUser['ID']) {
+			if ((int)$currentUserId === (int)$arUser['ID']) {
 				$currentUserType = (int)$arUser[$arParams['USER_UF_CODE']];
 			}
 			if ($currentUserType === (int)$arUser[$arParams['USER_UF_CODE']]) {
@@ -70,7 +71,11 @@ if ($USER->IsAuthorized() && $this->startResultCache(false, $USER->GetID())) {
 			]
 		);
 		while ($arElement = $rsElements->GetNextElement()) {
-			if(!in_array($USER->GetID(), $arElement->getProperties()['AUTHOR']['VALUE'])) {
+			$arProps = $arElement->getProperties();
+			if(
+				isset($arProps[$arParams['PROPERTY_AUTHOR']]['VALUE']) && 
+				!in_array($currentUserId, $arProps[$arParams['PROPERTY_AUTHOR']]['VALUE'])
+			) {
 				$arNews[] = $arElement->GetFields();
 			}
 		}
@@ -83,8 +88,10 @@ if ($USER->IsAuthorized() && $this->startResultCache(false, $USER->GetID())) {
 			$arNewsName[] = $news['ID'];
 		}
 		$arResult['ELEMENTS_COUNT'] = count(array_unique($arNewsName));
+	} else {
+		$this->AbortResultCache();
 	}
-}
+} 
 
 $this->includeComponentTemplate();
 
