@@ -40,7 +40,6 @@ if ($USER->IsAuthorized() && $this->StartResultCache(false, $currentUserId)) {
 		$currentUserType = 0;
 		$arUsersType = [];
 		$arUsers = [];
-		$arUsersLogin = [];
 		while ($arUser = $rsUser->GetNext()) {
 			if ((int)$currentUserId === (int)$arUser['ID']) {
 				$currentUserType = (int)$arUser[$arParams['UF_CODE']];
@@ -51,7 +50,6 @@ if ($USER->IsAuthorized() && $this->StartResultCache(false, $currentUserId)) {
 		foreach ($arUsers as $arUser) {
 			if ($currentUserType === (int)$arUser[$arParams['UF_CODE']]) {
 				$arUsersType[$arUser['ID']] = $arUser;
-				$arUsersLogin[$arUser['ID']] = $arUser['LOGIN'];
 			}
 		}
 
@@ -80,7 +78,7 @@ if ($USER->IsAuthorized() && $this->StartResultCache(false, $currentUserId)) {
 			$arProps = $arElement->getProperties();
 			if(
 				isset($arProps[$arParams['AUTHOR']]['VALUE']) && 
-				!in_array($currentUserId, $arProps[$arParams['PROPERTY_AUTHOR']]['VALUE'])
+				!in_array($currentUserId, $arProps[$arParams['AUTHOR']]['VALUE'])
 			) {
 				$arNews[] = $arElement->GetFields();
 			}
