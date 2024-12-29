@@ -10,7 +10,10 @@ $APPLICATION->SetTitle("Простой компонент");
 		"COMPONENT_TEMPLATE" => ".default",
 		"CACHE_TYPE" => "A",
 		"CACHE_TIME" => "36000000",
-		"PROPERTY_AUTHOR" => "PROPERTY_AUTHOR"
+		"PROPERTY_AUTHOR" => "AUTHOR",
+		"CACHE_GROUPS" => "N",
+		"UF_CODE" => "UF_AUTHOR_TYPE",
+		"AUTHOR" => "AUTHOR"
 	),
 	false
 );?><?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

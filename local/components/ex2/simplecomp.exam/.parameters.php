@@ -6,11 +6,11 @@ $arComponentParameters = array(
 			"NAME" => GetMessage("SIMPLECOMP_EXAM2_CAT_IBLOCK_ID"),
 			"TYPE" => "STRING",
 		),
-		"USER_UF_CODE" => array(
+		"UF_CODE" => array(
 			"NAME" => GetMessage("SIMPLECOMP_EXAM2_USER_UF_CODE"),
 			"TYPE" => "STRING",
 		),
-		"PROPERTY_AUTHOR" => array(
+		"AUTHOR" => array(
 			"NAME" => GetMessage("SIMPLECOMP_EXAM2_PROPERTY_AUTHOR"),
 			"TYPE" => "STRING",
 		),
