@@ -18,8 +18,8 @@ $currentUserId = $USER->GetID();
 if ($USER->IsAuthorized() && $this->StartResultCache(false, $currentUserId)) {
 	if (
 		intval($arParams["NEWS_IBLOCK_ID"]) > 0 &&
-		!empty($arParams['USER_UF_CODE']) &&
-		!empty($arParams['PROPERTY_AUTHOR'])
+		!empty($arParams['UF_CODE']) &&
+		!empty($arParams['AUTHOR'])
 	) {
 
 		$rsUser = CUser::GetList(
@@ -28,7 +28,7 @@ if ($USER->IsAuthorized() && $this->StartResultCache(false, $currentUserId)) {
 			[],
 			[
 				'SELECT' => [
-					$arParams['USER_UF_CODE']
+					$arParams['UF_CODE']
 				],
 				'FIELDS' => [
 					'ID',
@@ -40,13 +40,18 @@ if ($USER->IsAuthorized() && $this->StartResultCache(false, $currentUserId)) {
 		$currentUserType = 0;
 		$arUsersType = [];
 		$arUsers = [];
+		$arUsersLogin = [];
 		while ($arUser = $rsUser->GetNext()) {
 			if ((int)$currentUserId === (int)$arUser['ID']) {
-				$currentUserType = (int)$arUser[$arParams['USER_UF_CODE']];
+				$currentUserType = (int)$arUser[$arParams['UF_CODE']];
 			}
-			if ($currentUserType === (int)$arUser[$arParams['USER_UF_CODE']]) {
+			$arUsers[] = $arUser;
+		}
+
+		foreach ($arUsers as $arUser) {
+			if ($currentUserType === (int)$arUser[$arParams['UF_CODE']]) {
 				$arUsersType[$arUser['ID']] = $arUser;
-				$arUsers[$arUser['ID']] = $arUser['LOGIN'];
+				$arUsersLogin[$arUser['ID']] = $arUser['LOGIN'];
 			}
 		}
 
@@ -57,7 +62,7 @@ if ($USER->IsAuthorized() && $this->StartResultCache(false, $currentUserId)) {
 			],
 			[
 				"IBLOCK_ID" => $arParams["NEWS_IBLOCK_ID"],
-				$arParams['PROPERTY_AUTHOR'] => array_column($arUsersType, 'ID'),
+				"PROPERTY_".$arParams['AUTHOR'] => array_column($arUsersType, 'ID'),
 				"ACTIVE" => "Y"
 			], 
 			false, 
@@ -66,14 +71,15 @@ if ($USER->IsAuthorized() && $this->StartResultCache(false, $currentUserId)) {
 				"ID",
 				"IBLOCK_ID",
 				"NAME",
-				$arParams['PROPERTY_AUTHOR'],
+				"PROPERTY_".$arParams['AUTHOR'],
 				"ACTIVE_FROM"
 			]
 		);
 		while ($arElement = $rsElements->GetNextElement()) {
+
 			$arProps = $arElement->getProperties();
 			if(
-				isset($arProps[$arParams['PROPERTY_AUTHOR']]['VALUE']) && 
+				isset($arProps[$arParams['AUTHOR']]['VALUE']) && 
 				!in_array($currentUserId, $arProps[$arParams['PROPERTY_AUTHOR']]['VALUE'])
 			) {
 				$arNews[] = $arElement->GetFields();
