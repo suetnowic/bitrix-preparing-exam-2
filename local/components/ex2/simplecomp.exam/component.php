@@ -15,86 +15,99 @@ if (!Loader::includeModule("iblock")) {
 // Текущий пользователь и его новости – не выводятся
 global $USER;
 $currentUserId = $USER->GetID();
-if ($USER->IsAuthorized() && $this->StartResultCache(false, $currentUserId)) {
-	if (
+if ($USER->IsAuthorized()) {
+
+	$arButtons = CIBlock::GetPanelButtons($arParams["NEWS_IBLOCK_ID"]);
+	$this->AddIncludeAreaIcons([
+		[
+			'URL'   => $arButtons['submenu']['element_list']['ACTION_URL'],
+		    'TITLE' => GetMessage("IB_ADMIN"),
+		    'IN_PARAMS_MENU' => true,
+		]
+	]);
+
+	if($this->StartResultCache(false, $currentUserId)) {
+		if (
 		intval($arParams["NEWS_IBLOCK_ID"]) > 0 &&
 		!empty($arParams['UF_CODE']) &&
 		!empty($arParams['AUTHOR'])
-	) {
+		) {
 
-		$rsUser = CUser::GetList(
-			'',
-			'',
-			[],
-			[
-				'SELECT' => [
-					$arParams['UF_CODE']
-				],
-				'FIELDS' => [
-					'ID',
-					'LOGIN'
+			$rsUser = CUser::GetList(
+				'',
+				'',
+				[],
+				[
+					'SELECT' => [
+						$arParams['UF_CODE']
+					],
+					'FIELDS' => [
+						'ID',
+						'LOGIN'
+					]
 				]
-			]
-		);
+			);
 
-		$currentUserType = 0;
-		$arUsersType = [];
-		$arUsers = [];
-		while ($arUser = $rsUser->GetNext()) {
-			if ((int)$currentUserId === (int)$arUser['ID']) {
-				$currentUserType = (int)$arUser[$arParams['UF_CODE']];
+			$currentUserType = 0;
+			$arUsersType = [];
+			$arUsers = [];
+			while ($arUser = $rsUser->GetNext()) {
+				if ((int)$currentUserId === (int)$arUser['ID']) {
+					$currentUserType = (int)$arUser[$arParams['UF_CODE']];
+				}
+				$arUsers[] = $arUser;
 			}
-			$arUsers[] = $arUser;
-		}
 
-		foreach ($arUsers as $arUser) {
-			if ($currentUserType === (int)$arUser[$arParams['UF_CODE']]) {
-				$arUsersType[$arUser['ID']] = $arUser;
+			foreach ($arUsers as $arUser) {
+				if ($currentUserType === (int)$arUser[$arParams['UF_CODE']]) {
+					$arUsersType[$arUser['ID']] = $arUser;
+				}
 			}
-		}
 
-		$arNews = [];
-		$rsElements = CIBlockElement::GetList(
-			[
-				"NAME" => "ASC"
-			],
-			[
-				"IBLOCK_ID" => $arParams["NEWS_IBLOCK_ID"],
-				"PROPERTY_".$arParams['AUTHOR'] => array_column($arUsersType, 'ID'),
-				"ACTIVE" => "Y"
-			], 
-			false, 
-			false, 
-			[
-				"ID",
-				"IBLOCK_ID",
-				"NAME",
-				"PROPERTY_".$arParams['AUTHOR'],
-				"ACTIVE_FROM"
-			]
-		);
-		while ($arElement = $rsElements->GetNextElement()) {
+			$arNews = [];
+			$rsElements = CIBlockElement::GetList(
+				[
+					"NAME" => "ASC"
+				],
+				[
+					"IBLOCK_ID" => $arParams["NEWS_IBLOCK_ID"],
+					"PROPERTY_".$arParams['AUTHOR'] => array_column($arUsersType, 'ID'),
+					"ACTIVE" => "Y"
+				], 
+				false, 
+				false, 
+				[
+					"ID",
+					"IBLOCK_ID",
+					"NAME",
+					"PROPERTY_".$arParams['AUTHOR'],
+					"ACTIVE_FROM"
+				]
+			);
+			while ($arElement = $rsElements->GetNextElement()) {
 
-			$arProps = $arElement->getProperties();
-			if(
-				isset($arProps[$arParams['AUTHOR']]['VALUE']) && 
-				!in_array($currentUserId, $arProps[$arParams['AUTHOR']]['VALUE'])
-			) {
-				$arNews[] = $arElement->GetFields();
+				$arProps = $arElement->getProperties();
+				if(
+					isset($arProps[$arParams['AUTHOR']]['VALUE']) && 
+					!in_array($currentUserId, $arProps[$arParams['AUTHOR']]['VALUE'])
+				) {
+					$arNews[] = $arElement->GetFields();
+				}
 			}
-		}
 
-		$arNewsName = [];
-		$arResult['ELEMENTS'] = [];
-		foreach($arNews as $news) {
-			$arResult['ELEMENTS'][$news['PROPERTY_AUTHOR_VALUE']]['LOGIN'] = $arUsers[$news['PROPERTY_AUTHOR_VALUE']];
-			$arResult['ELEMENTS'][$news['PROPERTY_AUTHOR_VALUE']]['NEWS'][] = $news;
-			$arNewsName[] = $news['ID'];
+			$arNewsName = [];
+			$arResult['ELEMENTS'] = [];
+			foreach($arNews as $news) {
+				$arResult['ELEMENTS'][$news['PROPERTY_AUTHOR_VALUE']]['LOGIN'] = $arUsers[$news['PROPERTY_AUTHOR_VALUE']];
+				$arResult['ELEMENTS'][$news['PROPERTY_AUTHOR_VALUE']]['NEWS'][] = $news;
+				$arNewsName[] = $news['ID'];
+			}
+			$arResult['ELEMENTS_COUNT'] = count(array_unique($arNewsName));
+		} else {
+			$this->AbortResultCache();
 		}
-		$arResult['ELEMENTS_COUNT'] = count(array_unique($arNewsName));
-	} else {
-		$this->AbortResultCache();
 	}
+	
 } 
 
 $this->includeComponentTemplate();
