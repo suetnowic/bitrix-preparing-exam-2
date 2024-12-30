@@ -114,26 +114,46 @@ $APPLICATION->IncludeFile(
 				<div class="content-block">
 					<div class="content-block-inner">
 						<h3><?=GetMessage('CFT_NEWS')?></h3>
-<?
-$APPLICATION->IncludeFile(
-	SITE_DIR."include/news.php",
-	Array(),
-	Array("MODE"=>"html")
-);
-?>
+							<?
+							$APPLICATION->IncludeFile(
+								SITE_DIR."include/news.php",
+								Array(),
+								Array("MODE"=>"html")
+							);
+							?>
 					</div>
 				</div>
 				
 				<div class="content-block">
 					<div class="content-block-inner">
+						<h3><?=GetMessage('CFT_LANG_CANGE')?></h3>
+						<?$APPLICATION->IncludeComponent(
+							"bitrix:main.site.selector", 
+							"dropdown", 
+							array(
+								"COMPONENT_TEMPLATE" => "dropdown1",
+								"SITE_LIST" => array(
+									0 => "s1",
+									1 => "s2",
+								),
+								"CACHE_TYPE" => "A",
+								"CACHE_TIME" => "3600"
+							),
+							false
+						);?>
+					</div>
+				</div>
+
+				<div class="content-block">
+					<div class="content-block-inner">
 						
-<?
-$APPLICATION->IncludeComponent("bitrix:search.form", "flat", Array(
-	"PAGE" => "#SITE_DIR#search/",
-),
-	false
-);
-?>
+						<?
+						$APPLICATION->IncludeComponent("bitrix:search.form", "flat", Array(
+							"PAGE" => "#SITE_DIR#search/",
+						),
+							false
+						);
+						?>
 					</div>
 				</div>
 
