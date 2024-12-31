@@ -90,6 +90,7 @@ $APPLICATION->SetTitle("Новости");
 		"DISPLAY_PREVIEW_TEXT" => "Y",
 		"USE_SHARE" => "N",
 		"SPECIALDATE" => "Y",
+		"CANONICAL" => "5",
 		"SEF_URL_TEMPLATES" => array(
 			"news" => "",
 			"section" => "",
