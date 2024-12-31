@@ -4,10 +4,13 @@ use Bitrix\Main\EventManager;
 
 $eventManager = EventManager::getInstance();
 
-$eventManager->addEventHandler("iblock", "OnBeforeIBlockElementUpdate", Array("DEACTIVATE", "OnBeforeIBlockElementUpdateHandler"));
+$eventManager->addEventHandler("iblock", "OnBeforeIBlockElementUpdate", [Deactivate::class, "OnBeforeIBlockElementUpdateHandler"]);
 
-class DEACTIVATE
+class Deactivate
 {
+
+	const MIN_SHOW_COUNT = 2;
+
 	public static function OnBeforeIBlockElementUpdateHandler(&$arFields)
 	{
 		CModule::IncludeModule("iblock");
@@ -23,7 +26,7 @@ class DEACTIVATE
 			["SHOW_COUNTER"]
 		);
 		while ($ob = $res->GetNext()) {
-			if($ob["SHOW_COUNTER"] > 2) {
+			if($ob["SHOW_COUNTER"] > self::MIN_SHOW_COUNT) {
 				global $APPLICATION;
 	            $APPLICATION->throwException(GetMessage("STATUS", ["#COUNT#" => $ob["SHOW_COUNTER"]]));
 	            return false;
