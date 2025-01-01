@@ -26,7 +26,7 @@ class Deactivate
 			["SHOW_COUNTER"]
 		);
 		while ($ob = $res->GetNext()) {
-			if($ob["SHOW_COUNTER"] > self::MIN_SHOW_COUNT) {
+			if($ob["SHOW_COUNTER"] > self::MIN_SHOW_COUNT && $arFields["ACTIVE"] !== "Y") {
 				global $APPLICATION;
 	            $APPLICATION->throwException(GetMessage("STATUS", ["#COUNT#" => $ob["SHOW_COUNTER"]]));
 	            return false;
