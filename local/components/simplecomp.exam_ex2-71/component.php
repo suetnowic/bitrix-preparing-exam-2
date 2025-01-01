@@ -10,66 +10,66 @@ if(!Loader::includeModule("iblock"))
 	return;
 }
 
-if(intval($arParams["PRODUCTS_IBLOCK_ID"]) > 0)
-{
-	
-	//iblock elements
-	$arSelectElems = array (
-		"ID",
-		"IBLOCK_ID",
-		"NAME",
-	);
-	$arFilterElems = array (
-		"IBLOCK_ID" => $arParams["PRODUCTS_IBLOCK_ID"],
-		"ACTIVE" => "Y"
-	);
-	$arSortElems = array (
-			"NAME" => "ASC"
-	);
-	
-	$arResult["ELEMENTS"] = array();
-	$rsElements = CIBlockElement::GetList($arSortElems, $arFilterElems, false, false, $arSelectElems);
-	while($arElement = $rsElements->GetNext())
-	{
-		$arResult["ELEMENTS"][] = $arElement;
-	}
-	
-	//iblock sections
-	$arSelectSect = array (
-			"ID",
-			"IBLOCK_ID",
-			"NAME",
-	);
-	$arFilterSect = array (
-			"IBLOCK_ID" => $arParams["PRODUCTS_IBLOCK_ID"],
-			"ACTIVE" => "Y"
-	);
-	$arSortSect = array (
-			"NAME" => "ASC"
-	);
-	
-	$arResult["SECTIONS"] = array();
-	$rsSections = CIBlockSection::GetList($arSortSect, $arFilterSect, false, $arSelectSect, false);
-	while($arSection = $rsSections->GetNext())
-	{
-		$arResult["SECTIONS"][] = $arSection;
-	}
+global $USER;
+if($this->StartResultCache(false, $USER->GetGroups())) {
+	if(
+		intval($arParams["PRODUCTS_IBLOCK_ID"]) > 0 &&
+		intval($arParams["CLASSIFICATOR_IBLOCK_ID"]) > 0 &&
+		!empty($arParams["PROPERTY_CODE"]) && 
+		!empty($arParams["TEMPLATE_DETAIL_URL"])
+	) {
 		
-	// user
-	$arOrderUser = array("id");
-	$sortOrder = "asc";
-	$arFilterUser = array(
-		"ACTIVE" => "Y"
-	);
-	
-	$arResult["USERS"] = array();
-	$rsUsers = CUser::GetList($arOrderUser, $sortOrder, $arFilterUser); // выбираем пользователей
-	while($arUser = $rsUsers->GetNext())
-	{
-		$arResult["USERS"][] = $arUser;
-	}	
-	
-	
+		$arFirm = [];
+
+		$rsClassificator = CIBlockElement::GetList(
+			[],
+			[
+				"IBLOCK_ID" => $arParams["CLASSIFICATOR_IBLOCK_ID"],
+				"ACTIVE" => "Y",
+				"CHECK_PERMISSIONS" => $arParams["CACHE_GROUPS"]
+			],
+			false,
+			false,
+			["ID", "NAME"]
+		);
+		while($ob = $rsClassificator->GetNext()) {
+			$arFirm[$ob["ID"]] = $ob;
+		}
+
+		$result["FIRM_DATA"] = $arFirm;
+
+		$rsProducts = CIBlockElement::GetList(
+			[],
+			[
+				"IBLOCK_ID" => $arParams["PRODUCTS_IBLOCK_ID"],
+				"ACTIVE" => "Y",
+				"CHECK_PERMISSIONS" => $arParams["CACHE_GROUPS"],
+				"=PROPERTY_" . $arParams["PROPERTY_CODE"] => array_column($arFirm, "ID"),
+			],
+			false,
+			false,
+			["ID", "NAME", "PROPERTY_MATERIAL", "PROPERTY_ARTNUMBER", "PROPERTY_PRICE", "IBLOCK_SECTION_ID", "PROPERTY_" . $arParams["PROPERTY_CODE"]]
+		);
+		while($ob = $rsProducts->GetNext()) {
+
+			$result["FIRM_DATA"][$ob["PROPERTY_" . $arParams["PROPERTY_CODE"] . "_VALUE"]]["PRODUCTS"][] = [
+				"ID" => $ob["ID"],
+				"NAME" => $ob["NAME"],
+				"PRICE" => $ob["PROPERTY_PRICE_VALUE"],
+				"MATERIAL" => $ob["PROPERTY_MATERIAL_VALUE"],
+				"ARTNUMBER" => $ob["PROPERTY_ARTNUMBER_VALUE"],
+				"DETAIL" => str_replace(["#SECTION_ID#", "#ELEMENT_ID#"], [$ob["IBLOCK_SECTION_ID"], $ob["ID"]], $arParams["TEMPLATE_DETAIL_URL"])
+			];
+
+		}
+
+		$arResult["ITEMS"] = $result["FIRM_DATA"];
+		$arResult["FIRM_QTY"] = count($arFirm);
+ 		
+	}
 }
-$this->includeComponentTemplate();	
+
+$this->includeComponentTemplate();
+
+$APPLICATION->SetTitle(GetMessage("COUNT_TITLE", ["#COUNT#" => $arResult["FIRM_QTY"]]));
 ?>
