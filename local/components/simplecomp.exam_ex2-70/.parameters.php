@@ -14,6 +14,10 @@ $arComponentParameters = array(
 			"NAME" => GetMessage("SIMPLECOMP_EXAM2_UF_PROP_CODE"),
 			"TYPE" => "STRING",
 		],
+		"TEMPLATE_DETAIL_URL" => [
+			"NAME" => GetMessage("TEMPLATE_DETAIL_URL"),
+			"TYPE" => "STRING",
+		],
 		"CACHE_TIME"  =>  ["DEFAULT"=>36000000],
 	),
 );

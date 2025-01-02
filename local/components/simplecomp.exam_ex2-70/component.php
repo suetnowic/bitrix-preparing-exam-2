@@ -38,14 +38,17 @@ if($this->StartResultCache()) {
 		}
 
 		$rsProducts = CIBlockElement::GetList(
-			[],
+			[				
+				"NAME" => "ASC",
+				"SORT" => "ASC"
+			],
 			[
 				"IBLOCK_ID" => $arParams["PRODUCTS_IBLOCK_ID"],
 				"ACTIVE" => "Y",
 			],
 			false,
 			false,
-			["ID", "NAME", "PROPERTY_MATERIAL", "PROPERTY_ARTNUMBER", "PROPERTY_PRICE", "IBLOCK_SECTION_ID"]
+			["ID", "NAME", "PROPERTY_MATERIAL", "PROPERTY_ARTNUMBER", "PROPERTY_PRICE", "IBLOCK_SECTION_ID", "CODE"]
 		);
 		while($arElement = $rsProducts->GetNext()) {
 			++$productQty;
@@ -54,7 +57,12 @@ if($this->StartResultCache()) {
 				"NAME" => $arElement["NAME"],
 				"MATERIAL" => $arElement["PROPERTY_MATERIAL_VALUE"],
 				"ARTNUMBER" => $arElement["PROPERTY_ARTNUMBER_VALUE"],
-				"PRICE" => $arElement["PROPERTY_PRICE_VALUE"]
+				"PRICE" => $arElement["PROPERTY_PRICE_VALUE"],
+				"DETAIL_URL" => str_replace(
+					["#SECTION_ID#", "#ELEMENT_CODE#"], 
+					[$arElement["IBLOCK_SECTION_ID"], $arElement["CODE"]], 
+					$arParams["TEMPLATE_DETAIL_URL"]
+				),
 			];
 		}
 
