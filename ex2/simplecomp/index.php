@@ -9,6 +9,7 @@ $APPLICATION->SetTitle("Простой компонент");
 		"CACHE_TYPE" => "A",
 		"NEWS_IBLOCK_ID" => "1",
 		"PRODUCTS_IBLOCK_ID" => "2",
+		"TEMPLATE_DETAIL_URL" => "catalog_exam/#SECTION_ID#/#ELEMENT_CODE#",
 		"UF_PROP_CODE" => "UF_NEWS_LINK"
 	)
 );?><?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

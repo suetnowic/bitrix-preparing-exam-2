@@ -7,10 +7,17 @@
 <ul>
 	<? foreach ($arResult["ITEMS"] as $item): ?>
 		<li>
+			<? $item["SECTIONS"] = is_array($item["SECTIONS"]) ? $item["SECTIONS"] : []; ?>
 			<b><?=$item["NAME"]?></b> - <?=$item["ACTIVE_FROM"]?> (<?=implode(', ', $item["SECTIONS"])?>)
 			<ul>
 				<?foreach ($item["PRODUCTS"] as $product): ?>
-					<li><?=$product["NAME"]?> - <?=$product["PRICE"]?> - <?=$product["MATERIAL"]?> - <?=$product["ARTNUMBER"]?></li>	
+					<li>
+						<?=$product["NAME"]?> - 
+						<?=$product["PRICE"]?> - 
+						<?=$product["MATERIAL"]?> - 
+						<?=$product["ARTNUMBER"]?> 
+						(<?=$product["DETAIL_URL"]?>.php)
+						</li>	
 				<? endforeach ?>
 			</ul>
 		</li>
