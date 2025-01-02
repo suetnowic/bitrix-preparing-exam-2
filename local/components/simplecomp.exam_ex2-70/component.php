@@ -10,7 +10,13 @@ if(!Loader::includeModule("iblock"))
 	return;
 }
 
-if($this->StartResultCache()) {
+$filter = false;
+
+if(isset($_GET['F'])) {
+	$filter = true;
+}
+
+if($this->StartResultCache(false, $filter)) {
 
 	if (
 		intval($arParams["PRODUCTS_IBLOCK_ID"]) > 0 && 
@@ -37,15 +43,26 @@ if($this->StartResultCache()) {
 			$arSections[$arElement["ID"]] = $arElement;
 		}
 
+		$arProductFilter = [
+			"IBLOCK_ID" => $arParams["PRODUCTS_IBLOCK_ID"],
+			"ACTIVE" => "Y",
+		];
+
+		if($filter) {
+			$arProductFilter[] = [
+				"LOGIC" => "OR",
+				["<=PROPERTY_PRICE" => 1700, "PROPERTY_MATERIAL" => "Дерево, ткань"],
+				["<PROPERTY_PRICE" => 1500, "PROPERTY_MATERIAL" => "Металл, пластик"]
+			];
+			$this->AbortResultCache();
+		}
+
 		$rsProducts = CIBlockElement::GetList(
 			[				
 				"NAME" => "ASC",
 				"SORT" => "ASC"
 			],
-			[
-				"IBLOCK_ID" => $arParams["PRODUCTS_IBLOCK_ID"],
-				"ACTIVE" => "Y",
-			],
+			$arProductFilter,
 			false,
 			false,
 			["ID", "NAME", "PROPERTY_MATERIAL", "PROPERTY_ARTNUMBER", "PROPERTY_PRICE", "IBLOCK_SECTION_ID", "CODE"]
@@ -86,6 +103,7 @@ if($this->StartResultCache()) {
 			$item["PRODUCTS"] = [];
 			foreach($arSections as $arSection) {
 				if(in_array($news["ID"], $arSection[$arParams["UF_PROP_CODE"]])) {
+					$arProducts[$arSection["ID"]] = is_array($arProducts[$arSection["ID"]]) ? $arProducts[$arSection["ID"]] : [];
 					$item["SECTIONS"][$arSection["ID"]] = $arSection["NAME"];
 					$item["PRODUCTS"] = array_merge($item["PRODUCTS"], $arProducts[$arSection["ID"]]);
 				}
