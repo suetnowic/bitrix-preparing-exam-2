@@ -16,6 +16,8 @@ if(isset($_GET['F'])) {
 	$filter = true;
 }
 
+
+global $CACHE_MANAGER;
 global $USER;
 if($USER->IsAuthorized()) {
 	$arButtons = CIBlock::GetPanelButtons($arParams["PRODUCTS_IBLOCK_ID"]);
@@ -37,7 +39,8 @@ $arNavParams = [
 
 $arNavigation = CDBResult::GetNavParams($arNavParams);
 
-if($this->StartResultCache(false, [$filter, $arNavigation])) {
+if($this->StartResultCache(false, [$filter, $arNavigation, "/servicesIblock"])) {
+	$CACHE_MANAGER->RegisterTag("iblock_id_3");
 
 	if (
 		intval($arParams["PRODUCTS_IBLOCK_ID"]) > 0 && 
@@ -158,7 +161,7 @@ if($this->StartResultCache(false, [$filter, $arNavigation])) {
 		$arResult["PRICE"]["MIN"] = min($arPrice);
 		$arResult["PRICE"]["MAX"] = max($arPrice);
 
-		$this->SetResultCacheKeys(["PRICE"]);
+		$this->SetResultCacheKeys(["PRICE", "PRODUCT_QTY"]);	
 
 	} else {
 		$this->AbortResultCache();
