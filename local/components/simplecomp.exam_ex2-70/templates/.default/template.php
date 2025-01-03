@@ -3,6 +3,9 @@
 <?
 $url = $APPLICATION->GetCurPage() . "?F=Y"; ?>
 <?=GetMessage("FILTER_TITLE") . "<a href='" . $url . "'>" . $url . "</a>"?>
+<br>
+<?=GetMessage("TIMESTAMP");?><?=time();?>
+
 <p>---</p>
 
 <p><b><?=GetMessage("SIMPLECOMP_EXAM2_CAT_TITLE")?></b></p>
