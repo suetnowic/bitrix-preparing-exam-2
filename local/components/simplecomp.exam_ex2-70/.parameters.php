@@ -18,6 +18,10 @@ $arComponentParameters = array(
 			"NAME" => GetMessage("TEMPLATE_DETAIL_URL"),
 			"TYPE" => "STRING",
 		],
+		"ELEMENT_PER_PAGE" => [
+			"NAME" => GetMessage("ELEMENT_PER_PAGE"),
+			"TYPE" => "STRING",
+		],
 		"CACHE_TIME"  =>  ["DEFAULT"=>36000000],
 	),
 );

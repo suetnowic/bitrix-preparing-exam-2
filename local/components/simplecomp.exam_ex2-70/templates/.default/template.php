@@ -42,3 +42,13 @@ $this->AddEditAction("news-add", $arResult["ADD_NEWS"]["LINK"], CIBlock::GetArra
 	
 	<? endforeach ?>
 </ul>
+
+<br>
+
+<p>
+	<b>
+		<?=GetMessage("NAVIGATION")?>
+	</b>
+	<br>
+		<?=$arResult["NAV_STRING"]?>
+</p>

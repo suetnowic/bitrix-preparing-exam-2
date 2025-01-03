@@ -29,7 +29,15 @@ if($USER->IsAuthorized()) {
 	]);
 }
 
-if($this->StartResultCache(false, $filter)) {
+$arNavParams = [
+	"nPageSize" => $arParams["ELEMENT_PER_PAGE"],
+	"bDescPageNumbering" => "",
+	"bShowAll" => true,
+];
+
+$arNavigation = CDBResult::GetNavParams($arNavParams);
+
+if($this->StartResultCache(false, [$filter, $arNavigation])) {
 
 	if (
 		intval($arParams["PRODUCTS_IBLOCK_ID"]) > 0 && 
@@ -113,9 +121,12 @@ if($this->StartResultCache(false, $filter)) {
 				"ACTIVE" => "Y",
 			],
 			false,
-			false,
+			$arNavParams,
 			["ID", "NAME", "ACTIVE_FROM", "IBLOCK_ID"]
 		);
+
+		$arResult["NAV_STRING"] = $rsNews->GetPageNavString(GetMessage("PAGE_TITLE"));
+
 		while($arElement = $rsNews->GetNext()) {
 			$arButtons = CIBlock::GetPanelButtons($arParams["NEWS_IBLOCK_ID"], $arElement["ID"], false);
 			
