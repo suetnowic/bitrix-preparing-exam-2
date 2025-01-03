@@ -16,6 +16,19 @@ if(isset($_GET['F'])) {
 	$filter = true;
 }
 
+global $USER;
+if($USER->IsAuthorized()) {
+	$arButtons = CIBlock::GetPanelButtons($arParams["PRODUCTS_IBLOCK_ID"]);
+
+	$this->AddIncludeAreaIcons([
+		[
+			"URL" => $arButtons["submenu"]["element_list"]["ACTION_URL"],
+			"TITLE" => GetMessage("SUBMENU_IB_ADMIN"),
+			"IN_PARAMS_MENU" => true 
+		]
+	]);
+}
+
 if($this->StartResultCache(false, $filter)) {
 
 	if (
