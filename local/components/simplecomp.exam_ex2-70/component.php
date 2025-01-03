@@ -70,6 +70,7 @@ if($this->StartResultCache(false, $filter)) {
 			$this->AbortResultCache();
 		}
 
+		$arPrice = [];
 		$rsProducts = CIBlockElement::GetList(
 			[				
 				"NAME" => "ASC",
@@ -87,6 +88,7 @@ if($this->StartResultCache(false, $filter)) {
 			$arResult["ADD_PRODUCT"]["LINK"] = $arButtons["edit"]["add_element"]["ACTION_URL"];
 
 			++$productQty;
+			$arPrice[] = $arElement["PROPERTY_PRICE_VALUE"];
 			$arProducts[$arElement["IBLOCK_SECTION_ID"]][] = [
 				"ID" => $arElement["ID"],
 				"NAME" => $arElement["NAME"],
@@ -141,6 +143,11 @@ if($this->StartResultCache(false, $filter)) {
 		$arResult["ADD_NEWS"]["IBLOCK_ID"] = $arParams["NEWS_IBLOCK_ID"];
 		$arResult["ITEMS"] = $result;
 		$arResult["PRODUCT_QTY"] = $productQty;
+
+		$arResult["PRICE"]["MIN"] = min($arPrice);
+		$arResult["PRICE"]["MAX"] = max($arPrice);
+
+		$this->SetResultCacheKeys(["PRICE"]);
 
 	} else {
 		$this->AbortResultCache();
