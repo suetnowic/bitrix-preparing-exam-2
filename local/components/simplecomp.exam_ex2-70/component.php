@@ -68,6 +68,11 @@ if($this->StartResultCache(false, $filter)) {
 			["ID", "NAME", "PROPERTY_MATERIAL", "PROPERTY_ARTNUMBER", "PROPERTY_PRICE", "IBLOCK_SECTION_ID", "CODE"]
 		);
 		while($arElement = $rsProducts->GetNext()) {
+
+			$arButtons = CIBlock::GetPanelButtons($arParams["PRODUCTS_IBLOCK_ID"], $arElement["ID"], false);
+
+			$arResult["ADD_PRODUCT"]["LINK"] = $arButtons["edit"]["add_element"]["ACTION_URL"];
+
 			++$productQty;
 			$arProducts[$arElement["IBLOCK_SECTION_ID"]][] = [
 				"ID" => $arElement["ID"],
@@ -80,6 +85,9 @@ if($this->StartResultCache(false, $filter)) {
 					[$arElement["IBLOCK_SECTION_ID"], $arElement["CODE"]], 
 					$arParams["TEMPLATE_DETAIL_URL"]
 				),
+				"EDIT_LINK" => $arButtons["edit"]["edit_element"]["ACTION_URL"],
+				"DELETE_LINK" => $arButtons["edit"]["delete_element"]["ACTION_URL"],
+				"IBLOCK_ID" => $arParams["PRODUCTS_IBLOCK_ID"],
 			];
 		}
 
@@ -91,10 +99,16 @@ if($this->StartResultCache(false, $filter)) {
 			],
 			false,
 			false,
-			["ID", "NAME", "ACTIVE_FROM"]
+			["ID", "NAME", "ACTIVE_FROM", "IBLOCK_ID"]
 		);
 		while($arElement = $rsNews->GetNext()) {
+			$arButtons = CIBlock::GetPanelButtons($arParams["NEWS_IBLOCK_ID"], $arElement["ID"], false);
+			
+			$arElement["EDIT_LINK"] = $arButtons["edit"]["edit_element"]["ACTION_URL"];
+			$arElement["DELETE_LINK"] = $arButtons["edit"]["delete_element"]["ACTION_URL"];
 			$arNews[$arElement["ID"]] = $arElement;
+
+			$arResult["ADD_NEWS"]["LINK"] = $arButtons["edit"]["add_element"]["ACTION_URL"];
 		}
 
 		$result = [];
@@ -110,6 +124,8 @@ if($this->StartResultCache(false, $filter)) {
 			}
 			$result[] = $item;
 		}
+		$arResult["ADD_PRODUCT"]["IBLOCK_ID"] = $arParams["PRODUCTS_IBLOCK_ID"];
+		$arResult["ADD_NEWS"]["IBLOCK_ID"] = $arParams["NEWS_IBLOCK_ID"];
 		$arResult["ITEMS"] = $result;
 		$arResult["PRODUCT_QTY"] = $productQty;
 
